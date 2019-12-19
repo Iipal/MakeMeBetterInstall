@@ -31,7 +31,6 @@ mkdir -p $project_path
 git_clone MakeMeBetter https://github.com/Iipal/makemebetter $project_path
 
 clear
-echo "** Do not delete '$project_path/libs/_example'. It's will be deleted by me at exit. **"
 echo ""
 echo " Additional configuration for '$project_name':"
 echo ""
@@ -42,13 +41,12 @@ function at_exit {
 }
 
 function help_message {
-    echo "l: List what is inside the '$project_path' folder now"
-    echo "a: Add sub-project\library to -> '$project_path/libs'"
-    echo "r: Remove library in '$project_path/libs'"
-    echo "d: Delete '$project_path' and quit"
-    echo "m: See any file using 'more' utilite."
-    echo "h: This help message"
-    echo "q: quit"
+    echo "l: List anything inside the '$project_path'.           | name"
+    echo "a: Add sub-project\library to -> '$project_path/libs'. | url, name"
+    echo "r: Remove library from '$project_path/libs'.           | name"
+    echo "d: Delete '$project_path' and quit.                    | Y/n"
+    echo "h: Print this help message."
+    echo "q: quit."
 }
 
 function add_sub_project {
@@ -88,6 +86,7 @@ function add_sub_project {
 function list_dir {
     list_path=$1
     if [ -z "$list_path" ]; then
+        ls -1 "$project_path/"
         read -p "List: $project_path/" list_path
     fi
 
@@ -105,8 +104,12 @@ function remove_lib {
     if [ -z "$r_lib" ]; then
         return 0
     elif [ -d "$project_path/libs/$r_lib" ]; then
-        rm -rf "$project_path/libs/$r_lib"
-        echo "$project_path/libs/$r_lib removed."
+        if [ "${r_lib##*/}" == "_example" ]; then
+            echo "** Do not delete '$project_path/libs/_example'. It's will be deleted by me at exit. **"
+        else
+            rm -rf "$project_path/libs/$r_lib"
+            echo "$project_path/libs/$r_lib removed."
+        fi
     else
         echo "$project_path/libs/$r_lib not founded."
     fi
@@ -127,7 +130,7 @@ function remove_path {
 
 help_message
 while : ; do
-    read -p "$> " opt arg1 arg2 arg3
+    read -p "$> " opt arg1 arg2
     case "$opt" in
         "q")
             at_exit
