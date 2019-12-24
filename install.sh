@@ -1,9 +1,10 @@
 #!/bin/bash
 
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
-    echo "always     : full path to project what must to be initialized with 'MakeMeBetter'."
-    echo "-h|--help  : print this message."
-    echo "-s|--skip  : skip cloning 'MakeMeBetter' to specified folder."
+    echo "always            : full path to project what must to be initialized with 'MakeMeBetter'."
+    echo "-h|--help         : print this message."
+    echo "-l|--library      : use for initialize only specified library."
+    echo "-s|--skip         : skip cloning 'MakeMeBetter' to specified folder."
     exit
 fi
 
@@ -30,8 +31,31 @@ function git_clone {
     return 0
 }
 
-if [ "$1" == "-s" ] || [ "$1" == '--skip' ]; then
+function lib_init {
+    if [ ! -d "./mmb_temp" ]; then
+        git clone https://github.com/Iipal/makemebetter ./mmb_temp
+    fi
+    if [ -d "$1/configs" ]; then
+        rm -rf $1/configs/*
+    else
+        mkdir -p "$1/configs"
+    fi
+    cp -rfv ./mmb_temp/libs/_example/configs/* $1/configs/
+    cp -rfv ./mmb_temp/libs/_example/Makefile $1/Makefile
+    echo ""
+    echo "/--------------------------------------------------------------------"
+    echo "| '$2' library succesfully initialized via 'MakeMeBetter'"
+    echo "\--------------------------------------------------------------------"
+    echo ""
+}
+
+if [ "$1" == "-s" ] || [ "$1" == "--skip" ]; then
     set_project_data $2
+elif [ "$1" == "-l" ] || [ "$1" == "--library" ]; then
+    set_project_data $2
+    lib_init $project_path $project_name
+    rm -rf ./mmb_temp
+    exit
 else
     set_project_data $1
     git_clone MakeMeBetter https://github.com/Iipal/makemebetter $project_path ./mmb_temp
@@ -39,9 +63,7 @@ else
 fi
 
 clear
-echo ""
 echo -e " Additional configuration for \e[1m'$project_name'\e[0m:"
-echo ""
 
 function at_exit {
     rm -rf $list_cloned_repos
@@ -50,28 +72,31 @@ function at_exit {
 }
 
 function help_message {
-    echo -e "\e[36ml\e[39m: List anything inside the '$project_path'           \e[2m| name\e[0m"
-    echo -e "\e[35ma\e[39m: Add sub-project\library to -> '$project_path/libs' \e[2m| url, name\e[0m"
-    echo -e "\e[31mr\e[39m: Remove library from '$project_path/libs'           \e[2m| name\e[0m"
-    echo -e "\e[31md\e[39m: Delete '$project_path' and quit                    \e[2m| Y/n\e[0m"
-    echo -e "\e[34mh\e[39m: Print this help message"
-    echo -e "q: quit"
+    echo ""
+    echo -e "/-----------------------------------------------------------------"
+    echo -e "| \e[36ml\e[39m: List anything inside the '$project_path'           \e[2m| name\e[0m"
+    echo -e "| \e[35ma\e[39m: Add sub-project\library to -> '$project_path/libs' \e[2m| url, name\e[0m"
+    echo -e "| \e[31mr\e[39m: Remove library from '$project_path/libs'           \e[2m| name\e[0m"
+    echo -e "| \e[31md\e[39m: Delete '$project_path' and quit                    \e[2m| Y/n\e[0m"
+    echo -e "| \e[34mh\e[39m: Print this help message"
+    echo -e "| q: quit"
+    echo -e "\-----------------------------------------------------------------"
+    echo ""
 }
 
-#git@github.com:Iipal/libtpool
 function add_sub_project {
     subp_url=$1
     if [ -z "$subp_url" ]; then
-        read -p "Sub-project github link: " subp_url
+        read -p " | Sub-project github link: " subp_url
         if [ -z "$subp_url" ]; then
-            echo "link can't be empty!"
+            echo " ! link can't be empty !"
             return 0
         fi
     fi
 
     subp_name=$2
     if [ -z "$subp_name" ]; then
-        read -p "Sub-project custom folder name: " subp_name
+        read -p " | Sub-project custom folder name: " subp_name
         if [ -z "$subp_name" ]; then
             subp_name=${subp_url##*/}
             subp_name=${subp_name%%.git}
@@ -83,7 +108,8 @@ function add_sub_project {
         return 0
     fi
 
-    read -p "Switch to specified branch(Y/n)" is_branch_switch
+    echo ""
+    read -p " | Switch to specified branch?(Y/n)" is_branch_switch
     if [ "$is_branch_switch" == "y" ] || [ "$is_branch_switch" == "Y" ]; then
         git --no-pager -C ./$subp_name branch --remotes
         read -p "Choose branch(empty to discard):" subp_branch
@@ -93,21 +119,18 @@ function add_sub_project {
         fi
     fi
 
-    echo ""
-    read -p "Initialize this sub-project with 'MakeMeBetter'?(Y/n) " is_mmb_init
+    read -p " | Initialize this sub-project via 'MakeMeBetter'?(Y/n) " is_mmb_init
     if [ "$is_mmb_init" == "y" ] || [ "$is_mmb_init" == "Y" ]; then
-        mkdir -p "$project_path/libs/$subp_name/configs"
-        cp -rf ./mmb_temp/libs/_example/Makefile $project_path/libs/$subp_name/Makefile
-        cp -rf ./mmb_temp/libs/_example/configs/* $project_path/libs/$subp_name/configs/
+        lib_init $project_path/libs/$subp_name $subp_name
     fi
-    echo "Done."
+    echo "/ Done."
 }
 
 function list_dir {
     list_path=$1
     if [ -z "$list_path" ]; then
         ls -1 "$project_path/"
-        read -p "List: $project_path/" list_path
+        read -p " | List: $project_path/" list_path
     fi
 
     ls -lah "$project_path/$list_path"
@@ -118,16 +141,16 @@ function remove_lib {
     if [ -z "$r_lib" ]; then
         echo "$project_path/libs:"
         ls -1 "$project_path/libs"
-        read -p "Remove: $project_path/libs/" r_lib
+        read -p " | Remove: $project_path/libs/" r_lib
     fi
 
     if [ -z "$r_lib" ]; then
         return 0
     elif [ -d "$project_path/libs/$r_lib" ]; then
         rm -rf "$project_path/libs/$r_lib"
-        echo "$project_path/libs/$r_lib removed."
+        echo " | $project_path/libs/$r_lib removed."
     else
-        echo "$project_path/libs/$r_lib not founded."
+        echo " | $project_path/libs/$r_lib not founded."
     fi
 
 }
@@ -135,7 +158,7 @@ function remove_lib {
 function remove_path {
     answer=$1
     if [ -z "$answer" ]; then
-        read -p "Sure you want to delete whole $project_path folder ?(Y/n): " answer
+        read -p " ? Sure you want to delete whole $project_path folder ?(Y/n): " answer
     fi
 
     if [ "$answer" == "y" ] || [ "$answer" == "Y" ] ; then
@@ -146,7 +169,7 @@ function remove_path {
 
 help_message
 while : ; do
-    read -p "$> " opt arg1 arg2
+    read -p "|> " opt arg1 arg2
     case "$opt" in
         "q")
             at_exit
@@ -167,7 +190,7 @@ while : ; do
             remove_path $arg1
             ;;
         *)
-            echo "Invalid option."
+            echo "_ Invalid option."
             ;;
     esac
     echo ""
