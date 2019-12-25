@@ -3,6 +3,7 @@
 if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
     echo "always            : full path to project what must to be initialized with 'MakeMeBetter'."
     echo "-h|--help         : print this message."
+    echo "-a|--aliases      : only install aliases for 'MakeMeBetter' Makefile."
     echo "-l|--library      : use for initialize only specified library."
     echo "-s|--skip         : skip cloning 'MakeMeBetter' to specified folder."
     exit
@@ -49,8 +50,41 @@ function lib_init {
     echo ""
 }
 
+function install_aliases {
+    echo "
+# MakeMeBetter aliases:
+alias debug='make debug'
+alias debugr='make debug_all'
+
+alias sanitize='make sanitize'
+alias sanitizer='make sanitize_all'
+
+alias assembly='make assembly'
+alias assemblyr='make assembly_all'
+
+alias dassembly='make debug_assembly'
+alias dassemblyr='make debug_assembly_all'
+
+alias pedantic='make pedantic'
+alias pedanticr='make pedantic_all'
+
+alias fclean='make fclean'
+alias clean='make clean'
+alias pre='make pre'
+alias re='make re'
+" > ~/.mmb_aliases
+    src_mmb=$(grep "source ~/.mmb_aliases" ~/.zshrc)
+    if [ -z "$src_mmb" ]; then
+        echo "source ~/.mmb_aliases" >> ~/.zshrc
+    fi
+    echo " - 'MakeMeBetter' aliases succesfully installed. For more info look at ~/.mmb_aliases."
+    exit
+}
+
 if [ "$1" == "-s" ] || [ "$1" == "--skip" ]; then
     set_project_data $2
+elif [ "$1" == "-a" ] || [ "$1" == "--aliases" ]; then
+    install_aliases
 elif [ "$1" == "-l" ] || [ "$1" == "--library" ]; then
     set_project_data $2
     lib_init $project_path $project_name
