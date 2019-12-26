@@ -1,4 +1,4 @@
-# [MakeMeBetter](https://github.com/Iipal/MakeMeBetter) install scripts
+# [MakeMeBetter](https://github.com/Iipal/MakeMeBetter) install script
 
 ## How to:
 ```bash
