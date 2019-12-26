@@ -51,6 +51,9 @@ function lib_init {
 }
 
 function install_aliases {
+    mkdir -p ~/.local
+    mkdir -p ~/.local/share
+    path_to_aliases=~/.local/share/.mmb_aliases
     echo "
 # MakeMeBetter aliases:
 alias debug='make debug'
@@ -72,12 +75,12 @@ alias fclean='make fclean'
 alias clean='make clean'
 alias pre='make pre'
 alias re='make re'
-" > ~/.mmb_aliases
-    src_mmb=$(grep "source ~/.mmb_aliases" ~/.zshrc)
+" > $path_to_aliases
+    src_mmb=$(grep "source $path_to_aliases" ~/.zshrc)
     if [ -z "$src_mmb" ]; then
-        echo "source ~/.mmb_aliases" >> ~/.zshrc
+        echo "source $path_to_aliases" >> ~/.zshrc
     fi
-    echo " - 'MakeMeBetter' aliases succesfully installed. For more info look at ~/.mmb_aliases."
+    echo " - 'MakeMeBetter' aliases succesfully installed. For more info look at '$path_to_aliases'."
     exit
 }
 
