@@ -72,6 +72,8 @@ alias pedantic='make pedantic'
 alias pedanticr='make pedantic_all'
 
 alias fclean='make fclean'
+alias dclean='make clean_deps'
+alias aclean='make clean_asms'
 alias clean='make clean'
 alias pre='make pre'
 alias re='make re'
