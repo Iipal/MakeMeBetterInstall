@@ -71,10 +71,17 @@ alias dassemblyr='make debug_assembly_all'
 alias pedantic='make pedantic'
 alias pedanticr='make pedantic_all'
 
+alias x86='make x86'
+alias x86r='make x86_all'
+
+alias dx86='make debug_x86'
+alias dx86r='make debug_x86_all'
+
 alias fclean='make fclean'
 alias dclean='make clean_deps'
 alias aclean='make clean_asms'
 alias clean='make clean'
+
 alias pre='make pre'
 alias re='make re'
 " > $path_to_aliases
