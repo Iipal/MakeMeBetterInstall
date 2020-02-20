@@ -24,6 +24,7 @@ function git_clone {
     echo "Cloning '$1' to -> '$3':"
     git clone --recurse-submodules $2 $4
     if [ -d "./$4" ]; then
+        rm -rf $4/README.md 2> /dev/null
         mkdir -p $3
         cp -rf $4/* $3/
         list_cloned_repos+="$4 "
