@@ -55,37 +55,7 @@ function install_aliases {
     mkdir -p ~/.local
     mkdir -p ~/.local/share
     path_to_aliases=~/.local/share/.mmb_aliases
-    echo "
-# MakeMeBetter aliases:
-alias debug='make debug'
-alias debugr='make debug_all'
-
-alias sanitize='make sanitize'
-alias sanitizer='make sanitize_all'
-
-alias assembly='make assembly'
-alias assemblyr='make assembly_all'
-
-alias dassembly='make debug_assembly'
-alias dassemblyr='make debug_assembly_all'
-
-alias pedantic='make pedantic'
-alias pedanticr='make pedantic_all'
-
-alias x86='make x86'
-alias x86r='make x86_all'
-
-alias dx86='make debug_x86'
-alias dx86r='make debug_x86_all'
-
-alias fclean='make fclean'
-alias dclean='make clean_deps'
-alias aclean='make clean_asms'
-alias clean='make clean'
-
-alias pre='make pre'
-alias re='make re'
-" > $path_to_aliases
+    cp ./mmb_aliases $path_to_aliases
     src_mmb=$(grep "source $path_to_aliases" ~/.zshrc)
     if [ -z "$src_mmb" ]; then
         echo "source $path_to_aliases" >> ~/.zshrc
