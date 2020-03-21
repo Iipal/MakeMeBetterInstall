@@ -14,7 +14,8 @@ function set_project_data {
         echo "missed path to folder. (-h for help)"
         exit
     fi
-    project_path=$1
+    project_path=$PWD/$1
+    project_path=${project_path%/.}
     project_name=$(basename -- $project_path)
 }
 
@@ -85,7 +86,9 @@ echo -e " Additional configuration for \e[1m'$project_name'\e[0m:"
 function at_exit {
     rm -rf $list_cloned_repos
     rm -rf $project_path/libs/_example
-    exit
+    cp ./git_ignores $project_path/.gitignore
+	echo "$project_name" >> $project_path/.gitignore
+	exit
 }
 
 function help_message {

@@ -1,0 +1,9 @@
+.vscode/
+.VScode/
+**.o
+**.a
+**.S
+**.s
+**.d
+**.DS_Store
+test/
