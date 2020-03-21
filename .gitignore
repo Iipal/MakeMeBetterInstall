@@ -1,10 +1,6 @@
-.vscode/
-.VScode/
-**.o
-**.a
-**.S
-**.s
-**.d
-**.DS_Store
-test/
-MakeMeBetter_install
+*
+
+!install.sh
+!.gitignore
+!git_ignores
+!mmb_aliases
